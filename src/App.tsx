@@ -9,20 +9,32 @@ import WhyWorkWithMe from "./components/WhyWorkWithMe";
 import Pricing from "./components/Pricing";
 import Testimonials from "./components/Testimonials";
 import Faqs from "./components/Faqs";
+import BookingSection from "./components/BookingSection";
 import Cta from "./components/Cta";
 import Footer from "./components/Footer";
 import LeadModal from "./components/LeadModal";
 import LeadFunnelAnalytics from "./components/LeadFunnelAnalytics";
 import AuditReportViewer from "./components/AuditReportViewer";
+import EngineeringChecklists from "./components/EngineeringChecklists";
+import CaseStudies from "./components/CaseStudies";
+import ShareWidget from "./components/ShareWidget";
+import KeyboardShortcuts from "./components/KeyboardShortcuts";
+import SkeletonLoader from "./components/SkeletonLoader";
+import Breadcrumbs from "./components/Breadcrumbs";
+import ExitIntentModal from "./components/ExitIntentModal";
 import { trackImpression, trackConversion } from "./utils/conversionTracker";
 
 export default function App() {
+  const [isInitializing, setIsInitializing] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"consultation" | "sample_audit">("consultation");
 
   const handleOpenConsultation = () => {
-    // Open the Google Form directly in a new window/tab instead of opening modal
-    window.open("https://forms.gle/mvsSajCo8yvRba219", "_blank", "noopener,noreferrer");
+    // Smooth scroll down to the dedicated integrated BookingSection in the DOM
+    const element = document.getElementById("scheduling-booking-section");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
     
     // Log conversion in local funnel tracking
     trackImpression("consultation");
@@ -38,6 +50,10 @@ export default function App() {
     setIsModalOpen(false);
   };
 
+  if (isInitializing) {
+    return <SkeletonLoader onComplete={() => setIsInitializing(false)} />;
+  }
+
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-indigo-500/30 selection:text-indigo-200">
       {/* Structural ambient styling gradient */}
@@ -50,6 +66,9 @@ export default function App() {
       />
 
       <main className="flex-grow">
+        {/* Semantic Breadcrumbs for SEO & Tech Discovery */}
+        <Breadcrumbs />
+
         {/* Sections */}
         <Hero
           onOpenConsultation={handleOpenConsultation}
@@ -67,6 +86,12 @@ export default function App() {
         {/* Interactive 10-Page Premium Audit Report Template */}
         <AuditReportViewer />
         
+        {/* Client Case Studies with Interactive Carousel & Metrics */}
+        <CaseStudies />
+        
+        {/* Interactive Developer Playbooks & Downloadable Checklists Hub */}
+        <EngineeringChecklists />
+        
         <WhyWorkWithMe />
         
         <Pricing onOpenConsultation={handleOpenConsultation} />
@@ -74,6 +99,9 @@ export default function App() {
         <Testimonials />
         
         <Faqs />
+        
+        {/* Dedicated Integrated Calendly Booking Hub */}
+        <BookingSection />
         
         <Cta
           onOpenConsultation={handleOpenConsultation}
@@ -96,6 +124,15 @@ export default function App() {
 
       {/* Live Conversion Funnel Tracking Overlay */}
       <LeadFunnelAnalytics />
+
+      {/* Floating Referral / Share Widget */}
+      <ShareWidget />
+
+      {/* Exit Intent Lead Capture Recovery System */}
+      <ExitIntentModal />
+
+      {/* Interactive Power-User Keyboard Navigation Console HUD */}
+      <KeyboardShortcuts />
     </div>
   );
 }

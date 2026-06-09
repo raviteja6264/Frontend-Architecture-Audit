@@ -1,18 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "motion/react";
 import { Check, Calendar, TrendingUp, HelpCircle, ShieldCheck } from "lucide-react";
-import { PricingPlan } from "../types";
 
 interface PricingProps {
   onOpenConsultation: () => void;
 }
 
 export default function Pricing({ onOpenConsultation }: PricingProps) {
-  const plans: PricingPlan[] = [
+  const [currency, setCurrency] = useState<"USD" | "INR">("USD");
+
+  const plans = [
     {
       id: "starter",
       name: "Starter Audit",
-      price: "$2,900",
+      priceUSD: "$249",
+      priceINR: "₹19,900",
       frequency: "one-time",
       description: "Intended for pre-seed startup MVPs looking to align structures before rapid scaling phases.",
       timeline: "3 Days delivery",
@@ -30,7 +32,8 @@ export default function Pricing({ onOpenConsultation }: PricingProps) {
     {
       id: "growth",
       name: "Growth Audit",
-      price: "$4,900",
+      priceUSD: "$499",
+      priceINR: "₹41,900",
       frequency: "one-time",
       description: "An exhaustive diagnostic for scaling SaaS teams looking to eliminate shipping drag and performance lags.",
       timeline: "7 Days delivery",
@@ -50,7 +53,8 @@ export default function Pricing({ onOpenConsultation }: PricingProps) {
     {
       id: "enterprise",
       name: "Enterprise Audit",
-      price: "$8,500",
+      priceUSD: "$899",
+      priceINR: "₹74,900",
       frequency: "one-time",
       description: "Custom-crafted scope built for multi-portfolio products or complex monorepos with modular boundaries.",
       timeline: "14 Days delivery",
@@ -75,7 +79,7 @@ export default function Pricing({ onOpenConsultation }: PricingProps) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Heading */}
-        <div className="max-w-3xl mx-auto text-center mb-16">
+        <div className="max-w-3xl mx-auto text-center mb-10">
           <div className="inline-block px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 text-[10px] font-bold uppercase tracking-widest mb-3">
             <span className="flex items-center gap-1.5 justify-center"><TrendingUp className="w-3.5 h-3.5 text-indigo-400" /> Transparent Pricing</span>
           </div>
@@ -87,6 +91,46 @@ export default function Pricing({ onOpenConsultation }: PricingProps) {
           </p>
         </div>
 
+        {/* Currency Switcher Toggle */}
+        <div className="flex justify-center mb-12">
+          <div className="relative p-1 bg-slate-950/80 border border-slate-850 rounded-xl flex items-center gap-1">
+            <button
+              onClick={() => setCurrency("USD")}
+              className={`relative z-10 py-2 px-4 rounded-lg font-mono text-[11px] uppercase tracking-wider transition-all font-bold cursor-pointer ${
+                currency === "USD"
+                  ? "text-white"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              {currency === "USD" && (
+                <motion.div
+                  layoutId="active-currency-bg"
+                  className="absolute inset-0 bg-indigo-600 rounded-lg -z-10"
+                  transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                />
+              )}
+              USD ($)
+            </button>
+            <button
+              onClick={() => setCurrency("INR")}
+              className={`relative z-10 py-2 px-4 rounded-lg font-mono text-[11px] uppercase tracking-wider transition-all font-bold cursor-pointer ${
+                currency === "INR"
+                  ? "text-white"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              {currency === "INR" && (
+                <motion.div
+                  layoutId="active-currency-bg"
+                  className="absolute inset-0 bg-indigo-600 rounded-lg -z-10"
+                  transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                />
+              )}
+              INR (₹)
+            </button>
+          </div>
+        </div>
+
         {/* Pricing Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch" id="pricing-plans-grid">
           {plans.map((plan, idx) => (
@@ -94,12 +138,24 @@ export default function Pricing({ onOpenConsultation }: PricingProps) {
               key={plan.id}
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ 
+                y: -10, 
+                scale: plan.isPopular ? 1.05 : 1.03,
+                boxShadow: plan.isPopular 
+                  ? "0 20px 40px -15px rgba(99, 102, 241, 0.2)" 
+                  : "0 20px 30px -15px rgba(99, 102, 241, 0.08)"
+              }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.05 }}
-              className={`rounded-2xl border flex flex-col justify-between p-6 sm:p-8 transition-all duration-300 relative ${
+              transition={{ 
+                type: "spring", 
+                stiffness: 300, 
+                damping: 22,
+                delay: idx * 0.05 
+              }}
+              className={`rounded-2xl border flex flex-col justify-between p-6 sm:p-8 relative ${
                 plan.isPopular
-                  ? "bg-slate-900 border-indigo-500/60 shadow-xl shadow-indigo-500/5 lg:scale-103 z-10"
-                  : "bg-slate-950/70 border-slate-900 hover:border-slate-800"
+                  ? "bg-slate-900 border-indigo-500/70 z-10 shadow-lg shadow-indigo-500/5 lg:scale-103"
+                  : "bg-slate-950/70 border-slate-900 hover:border-indigo-500/35"
               }`}
             >
               {/* Most Popular Accent Ribbon */}
@@ -122,7 +178,7 @@ export default function Pricing({ onOpenConsultation }: PricingProps) {
 
                 <div className="flex items-baseline gap-2 pt-2 border-b border-slate-900 pb-4">
                   <span className="text-4xl sm:text-5xl font-display font-black tracking-tight text-slate-100">
-                    {plan.price}
+                    {currency === "USD" ? plan.priceUSD : plan.priceINR}
                   </span>
                   <span className="text-xs text-slate-400 font-semibold uppercase">
                     / {plan.frequency}

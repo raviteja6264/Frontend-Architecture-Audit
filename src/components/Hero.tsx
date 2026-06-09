@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { Calendar, Download, Sparkles, Code2, ShieldCheck, Zap, Activity } from "lucide-react";
+import { Calendar, Download, Sparkles, Code2, ShieldCheck, Zap, Activity, Clock } from "lucide-react";
 
 interface HeroProps {
   onOpenConsultation: () => void;
@@ -8,6 +8,71 @@ interface HeroProps {
 }
 
 export default function Hero({ onOpenConsultation, onOpenSample }: HeroProps) {
+  // Slots & Countdown Urgency Simulation
+  const [slotsLeft, setSlotsLeft] = useState<number>(3);
+  const [timeStr, setTimeStr] = useState<string>("04h 12m 35s");
+
+  useEffect(() => {
+    // 1. Slots urgency simulation (persisted in browser for realism across loads)
+    const storedSlots = localStorage.getItem("arch_audit_slots_remaining");
+    let currentSlots = 3;
+    if (storedSlots) {
+      currentSlots = parseInt(storedSlots, 10);
+    } else {
+      // Default to randomly 3 or 4 left
+      currentSlots = Math.random() > 0.5 ? 3 : 4;
+      localStorage.setItem("arch_audit_slots_remaining", currentSlots.toString());
+    }
+    setSlotsLeft(currentSlots);
+
+    // After 18 seconds, simulate someone claiming a slot!
+    const slotsTimeout = setTimeout(() => {
+      if (currentSlots > 2) {
+        setSlotsLeft(2);
+        localStorage.setItem("arch_audit_slots_remaining", "2");
+      }
+    }, 18000);
+
+    // 2. Continuous session countdown
+    const sessionEndTimeKey = "arch_audit_countdown_end_time";
+    let endTimeStr = sessionStorage.getItem(sessionEndTimeKey);
+    let endTime: number;
+
+    if (endTimeStr) {
+      endTime = parseInt(endTimeStr, 10);
+    } else {
+      // 4 hours, 18 minutes from now
+      endTime = Date.now() + (4 * 60 * 60 + 18 * 60) * 1000;
+      sessionStorage.setItem(sessionEndTimeKey, endTime.toString());
+    }
+
+    const timer = setInterval(() => {
+      const now = Date.now();
+      const diff = endTime - now;
+
+      if (diff <= 0) {
+        // Reset rolling interval to keep conversion pressure active
+        const nextEndTime = Date.now() + (3 * 60 * 60 + 45 * 60) * 1000;
+        sessionStorage.setItem(sessionEndTimeKey, nextEndTime.toString());
+        return;
+      }
+
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      const fHours = hours.toString().padStart(2, "0");
+      const fMinutes = minutes.toString().padStart(2, "0");
+      const fSeconds = seconds.toString().padStart(2, "0");
+
+      setTimeStr(`${fHours}h ${fMinutes}m ${fSeconds}s`);
+    }, 1000);
+
+    return () => {
+      clearTimeout(slotsTimeout);
+      clearInterval(timer);
+    };
+  }, []);
   return (
     <section className="relative pt-32 pb-20 sm:pb-32 overflow-hidden bg-slate-950" id="hero">
       {/* Background Ornaments */}
@@ -52,6 +117,37 @@ export default function Hero({ onOpenConsultation, onOpenSample }: HeroProps) {
             >
               Architectural technical debt is the silent killer of product velocity. Unscalable React states, bloated package bundles, and hidden structural loopholes block 60% of growing SaaS development speed. Reclaim control with an expert technical audit.
             </motion.p>
+
+            {/* Limited Availability Urgency Banner */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              className="w-full max-w-lg bg-slate-900/60 border border-indigo-500/15 rounded-2xl p-3.5 sm:py-3 sm:px-4.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 shadow-lg shadow-black/40 relative overflow-hidden"
+              id="hero-urgency-banner"
+            >
+              {/* Subtle back glowing element */}
+              <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-xl pointer-events-none" />
+              
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-450 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                </span>
+                <span className="text-[10px] sm:text-xs font-mono font-bold tracking-wider text-slate-300 uppercase">
+                  ONLY <span className="text-rose-400 font-extrabold text-xs sm:text-[13px]">{slotsLeft} FREE AUDIT SLOTS</span> REMAINING THIS WEEK
+                </span>
+              </div>
+              <div className="flex items-center gap-2 self-stretch sm:self-auto justify-between sm:justify-start border-t sm:border-t-0 border-slate-900/60 pt-2 sm:pt-0 shrink-0 select-none">
+                <div className="flex items-center gap-1 text-[11px] font-mono text-slate-500">
+                  <Clock className="w-3.5 h-3.5 text-indigo-400/80" />
+                  <span>Cycle Ends:</span>
+                </div>
+                <span className="text-xs font-mono font-bold text-indigo-300 tracking-tight bg-indigo-950/40 px-2.5 py-0.5 border border-indigo-900/30 rounded-lg">
+                  {timeStr}
+                </span>
+              </div>
+            </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 15 }}

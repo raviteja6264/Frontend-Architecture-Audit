@@ -23,7 +23,7 @@ export default function Navbar({ onOpenConsultation, onOpenSample }: NavbarProps
     { label: "Services", href: "#services" },
     { label: "Process", href: "#process" },
     { label: "Deliverables", href: "#deliverables" },
-    { label: "About", href: "#about" },
+    { label: "Playbooks", href: "#checklists" },
     { label: "Pricing", href: "#pricing" },
     { label: "FAQs", href: "#faqs" },
   ];

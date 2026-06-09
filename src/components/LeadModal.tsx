@@ -62,7 +62,13 @@ export default function LeadModal({ isOpen, onClose, initialType }: LeadModalPro
 
   const handleTabSwitch = (type: "consultation" | "sample_audit") => {
     if (type === "consultation") {
-      window.open("https://forms.gle/mvsSajCo8yvRba219", "_blank", "noopener,noreferrer");
+      onClose();
+      setTimeout(() => {
+        const element = document.getElementById("scheduling-booking-section");
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 300);
       trackImpression("consultation");
       trackConversion("consultation");
     } else {

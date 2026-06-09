@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import { motion } from "motion/react";
+import PerformanceHeatmap from "./PerformanceHeatmap";
 import { 
   FileText, Shield, Award, Cpu, Flame, CheckSquare, Zap, Activity,
   Download, Printer, ChevronRight, ChevronLeft, Map, BarChart2, CheckCircle2,
@@ -359,6 +361,23 @@ export default function AuditReportViewer() {
 
             {/* Premium Paper Sheet Presentation Layout */}
             <div className="bg-slate-900 border border-slate-850 rounded-2xl p-6 sm:p-10 shadow-2xl relative min-h-[580px] overflow-hidden" id="report-sheet-frame">
+              {/* PDF Ready Floating Badge */}
+              <motion.div 
+                whileHover={{ scale: 1.05, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handlePrint}
+                className="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/30 hover:border-emerald-500/50 rounded-full text-emerald-400 font-mono text-[9px] font-bold uppercase tracking-wider cursor-pointer shadow-lg shadow-emerald-950/20 select-none hover:shadow-emerald-500/10 transition-all duration-300 no-print"
+                title="Click to print / download PDF report"
+                id="pdf-ready-hover-badge"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-450"></span>
+                </span>
+                <FileText className="w-3 h-3 text-emerald-400 shrink-0" />
+                <span>PDF Ready</span>
+              </motion.div>
+
               {/* Corner Watermarks */}
               <div className="absolute top-0 right-0 w-44 h-44 bg-indigo-500/[0.02] rounded-full blur-3xl pointer-events-none" />
               <div className="absolute bottom-4 right-6 text-[9px] font-mono text-slate-600 tracking-widest uppercase select-none pointer-events-none">
@@ -655,6 +674,11 @@ export default function AuditReportViewer() {
                         <strong className="text-slate-100 block mb-1 uppercase text-xs tracking-wider">Technical Impact Analysis:</strong>
                         The high Total Blocking Time of 840ms is caused by un-optimized layout calculations nested inside custom lists. 
                         Refactoring these with virtualization algorithms (such as react-window) will drop rendering frame load averages from 110ms to below 8ms.
+                      </div>
+
+                      {/* Interactive Visual Bottleneck Heatmap */}
+                      <div className="pt-3">
+                        <PerformanceHeatmap />
                       </div>
                     </div>
                   </div>
