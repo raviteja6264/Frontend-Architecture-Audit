@@ -1,0 +1,6 @@
+{
+  "name": "Frontend Architecture Audit",
+  "description": "Expert frontend architecture audits by Raviteja M. Scale faster, reduce technical debt, and improve performance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
